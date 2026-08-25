@@ -345,19 +345,11 @@
 }
 }
 
-/* Identitat de cada armari.
-   Els colors surten del codi de colors de les resistencies, que es la manera
-   que ja te el taller de convertir numeros en colors: marro 1, vermell 2,
-   taronja 3. Es salta el groc, que queda reservat per a les accions.
-   Serveix de debo: cada armari te el seu color a la pantalla i a l'adhesiu,
-   aixi s'apren "el vermell" sense haver de llegir res. */
+/* Els colors d'identitat dels armaris NO viuen aqui, sino a lib/armari.ts.
+   El color s'aplica com a estil en linia perque depen del codi de la ubicacio
+   i s'ha de poder calcular tambe per a l'adhesiu imprès; tenir-lo a dos llocs
+   nomes fa que un dia la pantalla i l'etiqueta deixin de coincidir. */
 @theme inline {
-  --color-armari-1: #96603a;
-  --color-armari-2: #c4342b;
-  --color-armari-3: #e0761f;
-  --color-armari-4: #3e9757;
-  --color-armari-5: #2f6fb5;
-  --color-armari-6: #7c5bc4;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 }
 
