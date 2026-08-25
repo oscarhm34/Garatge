@@ -64,7 +64,7 @@ export function AfegirUbicacio({ parentId, kind, vocab }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="lg" className="h-14 w-full border-dashed sm:flex-1">
+        <Button variant="ghost" size="lg" className="text-muted-foreground h-12 w-full">
           <Plus />
           Afegir {vocab.article} {vocab.singular.toLowerCase()}
         </Button>

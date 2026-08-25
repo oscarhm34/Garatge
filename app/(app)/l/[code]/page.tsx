@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { PackagePlus, QrCode } from 'lucide-react'
+import { PackagePlus } from 'lucide-react'
 import { AfegirUbicacio } from '@/components/garatge/afegir-ubicacio'
 import { GestionarUbicacio } from '@/components/garatge/gestionar-ubicacio'
 import { ItemCard } from '@/components/garatge/item-card'
@@ -104,9 +104,11 @@ export default async function UbicacioPage({ params }: PageProps<'/l/[code]'>) {
                   <div className="flex min-w-0 flex-col justify-center py-2 pr-2">
                     <p className="truncate font-semibold">{child.name}</p>
                     <p className="codi text-muted-foreground truncate text-xs">{child.code}</p>
-                    <p className="text-muted-foreground text-xs">
-                      {child.item_count_deep} {child.item_count_deep === 1 ? 'cosa' : 'coses'}
-                    </p>
+                    {child.item_count_deep > 0 ? (
+                      <p className="text-muted-foreground text-xs">
+                        {child.item_count_deep} {child.item_count_deep === 1 ? 'cosa' : 'coses'}
+                      </p>
+                    ) : null}
                   </div>
                 </Link>
               </li>
@@ -115,15 +117,7 @@ export default async function UbicacioPage({ params }: PageProps<'/l/[code]'>) {
         </section>
       ) : null}
 
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <AfegirUbicacio parentId={location.id} kind={childKind} vocab={vocab} />
-        <Button asChild variant="outline" size="lg" className="h-14 sm:w-auto">
-          <Link href={`/etiquetes?codi=${location.code}`}>
-            <QrCode />
-            Etiqueta
-          </Link>
-        </Button>
-      </div>
+      <AfegirUbicacio parentId={location.id} kind={childKind} vocab={vocab} />
 
       <section className="flex flex-col gap-2">
         {items.length === 0 ? (

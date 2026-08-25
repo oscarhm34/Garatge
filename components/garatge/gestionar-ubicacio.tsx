@@ -1,8 +1,9 @@
 'use client'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { Loader2, MoreVertical, Pencil, Trash2 } from 'lucide-react'
+import { Loader2, MoreVertical, Pencil, QrCode, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
@@ -92,6 +93,12 @@ export function GestionarUbicacio({ id, nom, codi, contingut, codiPare, potEsbor
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          <DropdownMenuItem asChild>
+            <Link href={`/etiquetes?codi=${codi}`}>
+              <QrCode />
+              Imprimir l&apos;etiqueta
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuItem
             onSelect={() => {
               setNomNou(nom)

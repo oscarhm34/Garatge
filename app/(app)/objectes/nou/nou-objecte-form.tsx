@@ -2,14 +2,13 @@
 
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
-import { Camera, Loader2, Sparkles, X } from 'lucide-react'
+import { Camera, ChevronDown, Loader2, Sparkles, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { apiPost } from '@/lib/fetcher'
 import { prepareImage, type PreparedImage } from '@/lib/image'
@@ -33,6 +32,17 @@ interface Props {
   categories: Category[]
 }
 
+/**
+ * Alta d'un objecte.
+ *
+ * El cami normal es un sol camp: el nom. El lloc ja el sap perque s'hi ha
+ * arribat escanejant el QR, i tota la resta —quantitat, categoria, etiquetes,
+ * descripcio— viu plegada darrere de "Mes detalls".
+ *
+ * Es aixi perque desar una cosa al garatge ha de costar menys que deixar-la
+ * en un racó. Sis camps per apuntar un martell garanteixen que a la tercera
+ * eina ja ningu no ho fa.
+ */
 export function NouObjecteForm({ householdId, locationId, locationCode, categories }: Props) {
   const router = useRouter()
   const fileRef = useRef<HTMLInputElement>(null)
@@ -45,7 +55,7 @@ export function NouObjecteForm({ householdId, locationId, locationCode, categori
   const [nom, setNom] = useState('')
   const [descripcio, setDescripcio] = useState('')
   const [quantitat, setQuantitat] = useState(1)
-  const [categoriaId, setCategoriaId] = useState<string>('')
+  const [categoriaId, setCategoriaId] = useState('')
   const [etiquetes, setEtiquetes] = useState('')
 
   const [analitzant, setAnalitzant] = useState(false)
@@ -58,8 +68,8 @@ export function NouObjecteForm({ householdId, locationId, locationCode, categori
       const prepared = await prepareImage(file)
       setFoto(prepared)
       setFotoUrl((previous) => {
-        // Alliberar la URL anterior; si no, cada foto nova deixa un blob
-        // penjat a memòria fins que es recarregui la pàgina.
+        // Alliberar la URL anterior; si no, cada foto nova deixa un blob penjat
+        // a memòria fins que es recarregui la pàgina.
         if (previous) URL.revokeObjectURL(previous)
         return URL.createObjectURL(prepared.blob)
       })
@@ -110,10 +120,15 @@ export function NouObjecteForm({ householdId, locationId, locationCode, categori
   }
 
   function categoriaIdPerNom(nomCategoria: string): string | null {
-    const found = categories.find(
+    const trobada = categories.find(
       (category) => category.name.toLowerCase() === nomCategoria.trim().toLowerCase(),
     )
-    return found?.id ?? null
+    return trobada?.id ?? null
+  }
+
+  function tornar() {
+    router.push(locationCode === null ? '/' : `/l/${locationCode}`)
+    router.refresh()
   }
 
   async function desarSuggeriments() {
@@ -139,20 +154,19 @@ export function NouObjecteForm({ householdId, locationId, locationCode, categori
       toast.success(`${seleccionats.length} objectes desats`)
       // Es torna a la ubicació per poder encadenar caixes: qui està inventariant
       // un prestatge en fa quatre fotos seguides, no una.
-      router.push(locationCode === null ? '/' : `/l/${locationCode}`)
-      router.refresh()
+      tornar()
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'No s’han pogut desar')
       setDesant(false)
     }
   }
 
-  async function desarManual(event: React.FormEvent<HTMLFormElement>) {
+  async function desar(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setDesant(true)
     try {
       const path = await pujarFoto()
-      const { objecte } = await apiPost<{ objecte: { id: string } }>('/api/objectes', {
+      await apiPost('/api/objectes', {
         nom: nom.trim(),
         descripcio: descripcio.trim() === '' ? null : descripcio.trim(),
         ubicacio: locationId,
@@ -166,8 +180,7 @@ export function NouObjecteForm({ householdId, locationId, locationCode, categori
           .filter((tag) => tag.length > 0),
       })
       toast.success(`${nom.trim()} desat`)
-      router.push(`/objectes/${objecte.id}`)
-      router.refresh()
+      tornar()
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'No s’ha pogut desar')
       setDesant(false)
@@ -175,7 +188,7 @@ export function NouObjecteForm({ householdId, locationId, locationCode, categori
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <form onSubmit={desar} className="flex flex-col gap-4">
       <input
         ref={fileRef}
         type="file"
@@ -187,16 +200,33 @@ export function NouObjecteForm({ householdId, locationId, locationCode, categori
         onChange={triarFoto}
       />
 
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="nom" className="text-base">
+          Què hi guardes?
+        </Label>
+        <Input
+          id="nom"
+          required
+          maxLength={120}
+          autoFocus
+          enterKeyHint="done"
+          placeholder="Martell"
+          className="h-16 text-lg"
+          value={nom}
+          onChange={(event) => setNom(event.target.value)}
+        />
+      </div>
+
       {fotoUrl ? (
         <div className="relative">
           {/* eslint-disable-next-line @next/next/no-img-element -- blob local, no passa per l'optimitzador */}
-          <img src={fotoUrl} alt="Foto triada" className="max-h-72 w-full rounded-xl object-cover" />
+          <img src={fotoUrl} alt="Foto triada" className="max-h-56 w-full rounded-lg object-cover" />
           <Button
             type="button"
             size="icon"
             variant="secondary"
             aria-label="Treure la foto"
-            className="absolute top-2 right-2"
+            className="absolute top-2 right-2 size-11"
             onClick={() => {
               URL.revokeObjectURL(fotoUrl)
               setFoto(null)
@@ -210,29 +240,45 @@ export function NouObjecteForm({ householdId, locationId, locationCode, categori
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-2">
-        <Button type="button" variant={foto ? 'outline' : 'default'} size="lg" onClick={() => fileRef.current?.click()}>
+      <Button type="submit" size="lg" className="h-16 text-base" disabled={desant || nom.trim().length === 0}>
+        {desant ? <Loader2 className="animate-spin" /> : null}
+        Desar
+      </Button>
+
+      <div className="flex gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          className="h-12 flex-1"
+          onClick={() => fileRef.current?.click()}
+        >
           <Camera />
-          {foto ? 'Fer-ne una altra' : 'Fer una foto'}
+          {foto ? 'Una altra foto' : 'Foto'}
         </Button>
 
         {foto && suggeriments === null ? (
-          <Button type="button" variant="secondary" size="lg" onClick={analitzar} disabled={analitzant}>
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            className="h-12 flex-1"
+            onClick={analitzar}
+            disabled={analitzant}
+          >
             {analitzant ? <Loader2 className="animate-spin" /> : <Sparkles />}
-            {analitzant ? 'Mirant què hi ha…' : 'Què hi ha, a la foto?'}
+            {analitzant ? 'Mirant…' : 'Què hi ha?'}
           </Button>
         ) : null}
       </div>
 
       {suggeriments !== null && suggeriments.length > 0 ? (
-        <section className="flex flex-col gap-2">
-          <h2 className="text-sm font-medium">
-            Hi he vist això. Desmarca el que no toqui.
-          </h2>
+        <section className="flex flex-col gap-2 rounded-lg border p-3">
+          <h2 className="text-sm font-semibold">Hi he vist això</h2>
           <ul className="flex flex-col gap-1">
             {suggeriments.map((item, index) => (
               <li key={`${item.nom}-${index}`}>
-                <label className="hover:bg-accent flex cursor-pointer items-center gap-3 rounded-lg border p-3">
+                <label className="hover:bg-accent flex min-h-12 cursor-pointer items-center gap-3 rounded-md px-2">
                   <Checkbox
                     checked={triats.has(index)}
                     onCheckedChange={(checked) =>
@@ -244,17 +290,11 @@ export function NouObjecteForm({ householdId, locationId, locationCode, categori
                       })
                     }
                   />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium">
-                      {item.nom}
-                      {item.quantitat > 1 ? (
-                        <span className="text-muted-foreground"> ×{item.quantitat}</span>
-                      ) : null}
-                    </span>
-                    <span className="text-muted-foreground block truncate text-xs">
-                      {item.categoria}
-                      {item.etiquetes.length > 0 ? ` · ${item.etiquetes.join(', ')}` : ''}
-                    </span>
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                    {item.nom}
+                    {item.quantitat > 1 ? (
+                      <span className="text-muted-foreground"> ×{item.quantitat}</span>
+                    ) : null}
                   </span>
                   {item.confianca < 0.6 ? (
                     <Badge variant="outline" className="shrink-0 text-xs">
@@ -266,90 +306,88 @@ export function NouObjecteForm({ householdId, locationId, locationCode, categori
             ))}
           </ul>
 
-          <Button type="button" size="lg" onClick={desarSuggeriments} disabled={desant || triats.size === 0}>
+          <Button
+            type="button"
+            size="lg"
+            className="h-14"
+            onClick={desarSuggeriments}
+            disabled={desant || triats.size === 0}
+          >
             {desant ? <Loader2 className="animate-spin" /> : null}
             Desar {triats.size} {triats.size === 1 ? 'objecte' : 'objectes'}
           </Button>
-          <Separator className="my-2" />
         </section>
       ) : null}
 
-      <form onSubmit={desarManual} className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="nom">Què és?</Label>
-          <Input
-            id="nom"
-            required
-            maxLength={120}
-            autoFocus={suggeriments === null}
-            placeholder="Martell de bola"
-            value={nom}
-            onChange={(event) => setNom(event.target.value)}
-          />
-        </div>
+      {/* Plegat a proposit. Aquests camps ajuden a buscar mes endavant, pero
+          demanar-los abans de desar es el que fa que no es desi res. */}
+      <details className="group rounded-lg border">
+        <summary className="text-muted-foreground flex min-h-12 cursor-pointer items-center justify-between px-4 text-sm font-medium">
+          Més detalls
+          <ChevronDown className="size-4 transition-transform group-open:rotate-180" aria-hidden />
+        </summary>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col gap-4 border-t p-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="quantitat">Quantitat</Label>
+              <Input
+                id="quantitat"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={9999}
+                value={quantitat}
+                onChange={(event) => setQuantitat(Math.max(1, Number(event.target.value)))}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="categoria">Categoria</Label>
+              {/* select natiu i no el component: al mòbil obre la roda del
+                  sistema, que es fa servir molt més ràpid amb una mà */}
+              <select
+                id="categoria"
+                className="border-input bg-background h-9 rounded-md border px-3 text-sm"
+                value={categoriaId}
+                onChange={(event) => setCategoriaId(event.target.value)}
+              >
+                <option value="">Cap</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
           <div className="flex flex-col gap-2">
-            <Label htmlFor="quantitat">Quantitat</Label>
+            <Label htmlFor="etiquetes">Etiquetes</Label>
             <Input
-              id="quantitat"
-              type="number"
-              inputMode="numeric"
-              min={1}
-              max={9999}
-              value={quantitat}
-              onChange={(event) => setQuantitat(Math.max(1, Number(event.target.value)))}
+              id="etiquetes"
+              placeholder="fusteria, mà"
+              value={etiquetes}
+              onChange={(event) => setEtiquetes(event.target.value)}
+            />
+            <p className="text-muted-foreground text-xs">
+              Separades per comes. Serveixen per buscar-lo després.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="descripcio">Detalls</Label>
+            <Textarea
+              id="descripcio"
+              rows={2}
+              maxLength={2000}
+              placeholder="El de mànec de fusta, 300 g"
+              value={descripcio}
+              onChange={(event) => setDescripcio(event.target.value)}
             />
           </div>
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="categoria">Categoria</Label>
-            {/* select natiu i no el component: al mòbil obre la roda del sistema,
-                que es fa servir molt més ràpid amb una mà */}
-            <select
-              id="categoria"
-              className="border-input bg-background h-9 rounded-md border px-3 text-sm"
-              value={categoriaId}
-              onChange={(event) => setCategoriaId(event.target.value)}
-            >
-              <option value="">Sense categoria</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="etiquetes">Etiquetes</Label>
-          <Input
-            id="etiquetes"
-            placeholder="fusteria, mà"
-            value={etiquetes}
-            onChange={(event) => setEtiquetes(event.target.value)}
-          />
-          <p className="text-muted-foreground text-xs">Separades per comes. Serveixen per buscar.</p>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="descripcio">Detalls (opcional)</Label>
-          <Textarea
-            id="descripcio"
-            rows={2}
-            maxLength={2000}
-            placeholder="El de mànec de fusta, 300 g"
-            value={descripcio}
-            onChange={(event) => setDescripcio(event.target.value)}
-          />
-        </div>
-
-        <Button type="submit" size="lg" disabled={desant || nom.trim().length === 0}>
-          {desant ? <Loader2 className="animate-spin" /> : null}
-          Desar
-        </Button>
-      </form>
-    </div>
+      </details>
+    </form>
   )
 }

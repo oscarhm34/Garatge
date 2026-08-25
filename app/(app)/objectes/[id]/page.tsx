@@ -1,10 +1,9 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Package } from 'lucide-react'
-import { AccionsObjecte } from '@/components/garatge/accions-objecte'
+import { ChevronDown, Package } from 'lucide-react'
+import { AccionsObjecte, MenuObjecte } from '@/components/garatge/accions-objecte'
 import { Placa, PlacaSenseLloc } from '@/components/garatge/placa'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { getItemActivity } from '@/lib/db/activity'
 import { getItem } from '@/lib/db/items'
 import { signPhotos } from '@/lib/db/photos'
@@ -40,7 +39,10 @@ export default async function ObjectePage({ params }: PageProps<'/objectes/[id]'
         </div>
 
         <div className="min-w-0 flex-1">
-          <h1 className="text-xl leading-tight font-semibold">{item.name}</h1>
+          <div className="flex items-start gap-1">
+            <h1 className="min-w-0 flex-1 text-xl leading-tight font-semibold">{item.name}</h1>
+            <MenuObjecte itemId={item.id} itemName={item.name} />
+          </div>
           {item.quantity > 1 ? (
             <p className="text-muted-foreground text-sm">{item.quantity} unitats</p>
           ) : null}
@@ -84,10 +86,12 @@ export default async function ObjectePage({ params }: PageProps<'/objectes/[id]'
       />
 
       {historial.length > 0 ? (
-        <section className="flex flex-col gap-2">
-          <Separator />
-          <h2 className="text-muted-foreground text-sm font-medium">Historial</h2>
-          <ol className="flex flex-col gap-1.5">
+        <details className="group rounded-lg border">
+          <summary className="text-muted-foreground flex min-h-12 cursor-pointer items-center justify-between px-4 text-sm font-medium">
+            Historial
+            <ChevronDown className="size-4 transition-transform group-open:rotate-180" aria-hidden />
+          </summary>
+          <ol className="flex flex-col gap-1.5 border-t p-4">
             {historial.map((entry) => (
               <li key={entry.id} className="text-muted-foreground flex gap-2 text-xs">
                 <time dateTime={entry.created_at} className="shrink-0 font-mono">
@@ -101,7 +105,7 @@ export default async function ObjectePage({ params }: PageProps<'/objectes/[id]'
               </li>
             ))}
           </ol>
-        </section>
+        </details>
       ) : null}
     </div>
   )

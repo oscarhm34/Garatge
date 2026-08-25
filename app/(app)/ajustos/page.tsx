@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { LogOut, QrCode, Users } from 'lucide-react'
+import { Clock, LogOut, QrCode, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
@@ -62,12 +62,20 @@ export default async function AjustosPage() {
         </CardContent>
       </Card>
 
-      <Button asChild variant="outline" size="lg">
-        <Link href="/etiquetes">
-          <QrCode />
-          Imprimir totes les etiquetes
-        </Link>
-      </Button>
+      <div className="flex flex-col gap-2">
+        <Button asChild variant="outline" size="lg" className="h-14 justify-start">
+          <Link href="/etiquetes">
+            <QrCode />
+            Imprimir les etiquetes
+          </Link>
+        </Button>
+        <Button asChild variant="outline" size="lg" className="h-14 justify-start">
+          <Link href="/historial">
+            <Clock />
+            Historial
+          </Link>
+        </Button>
+      </div>
 
       <Separator />
 

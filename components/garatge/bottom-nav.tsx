@@ -2,28 +2,19 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Clock, Grid2x2, ScanLine, Search, Tag } from 'lucide-react'
+import { Grid2x2, ScanLine, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
-
-const ESQUERRA = [
-  { href: '/', label: 'Cercar', icon: Search },
-  { href: '/mapa', label: 'Mapa', icon: Grid2x2 },
-] as const
-
-const DRETA = [
-  { href: '/etiquetes', label: 'Etiquetes', icon: Tag },
-  { href: '/historial', label: 'Historial', icon: Clock },
-] as const
 
 /**
  * Barra inferior.
  *
- * Va a baix perque al garatge s'hi va dret i amb una ma: el polze no arriba a
- * la part alta d'un mobil gran.
+ * Tres coses i prou: buscar, escanejar i mirar el mapa. Etiquetes i historial
+ * van a Ajustos, perque les etiquetes s'imprimeixen quatre cops en tota la
+ * vida i el registre d'activitat no l'obre ningu de casa. Una barra amb cinc
+ * pestanyes obliga a llegir-les; amb tres, s'hi va sense pensar.
  *
- * Escanejar ocupa el centre i es l'unic boto de color perque es l'accio que es
- * fa mes vegades i sempre amb pressa, plantat davant d'un armari obert. Tenir-lo
- * sempre al mateix lloc vol dir poder-lo prémer sense mirar.
+ * Va a baix perque al garatge s'hi es dret i amb una ma: el polze no arriba a
+ * la part alta d'un mobil gran.
  */
 export function BottomNav() {
   const pathname = usePathname()
@@ -36,10 +27,11 @@ export function BottomNav() {
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <ul className="mx-auto flex max-w-2xl items-stretch">
-        {ESQUERRA.map((link) => (
-          <Pestanya key={link.href} {...link} pathname={pathname} />
-        ))}
+        <Pestanya href="/" label="Cercar" icon={Search} pathname={pathname} />
 
+        {/* Escanejar es l'unic boto de color: es l'accio que es fa mes vegades
+            i sempre amb pressa, plantat davant d'un armari obert. Tenir-lo
+            sempre al mateix lloc vol dir poder-lo prémer sense mirar. */}
         <li className="flex flex-1 justify-center">
           <Link
             href="/escanejar"
@@ -56,9 +48,7 @@ export function BottomNav() {
           </Link>
         </li>
 
-        {DRETA.map((link) => (
-          <Pestanya key={link.href} {...link} pathname={pathname} />
-        ))}
+        <Pestanya href="/mapa" label="Mapa" icon={Grid2x2} pathname={pathname} />
       </ul>
     </nav>
   )
@@ -81,7 +71,7 @@ function Pestanya({ href, label, icon: Icon, pathname }: PestanyaProps) {
         aria-current={actiu ? 'page' : undefined}
         className={cn(
           // min-h-[var(--toc)] son els 56 px que demana un dit amb guant.
-          'flex min-h-[var(--toc)] flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors',
+          'flex min-h-[var(--toc)] flex-col items-center justify-center gap-1 text-xs font-medium transition-colors',
           actiu ? 'text-foreground' : 'text-muted-foreground',
         )}
       >
