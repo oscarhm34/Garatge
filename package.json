@@ -12,7 +12,7 @@
     "test:watch": "vitest",
     "icones": "node scripts/genera-icones.mjs",
     "db:push": "supabase db push",
-    "db:types": "supabase gen types typescript --linked > lib/types/database.ts"
+    "db:types": "supabase gen types typescript --linked > lib/types/database.generated.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.120.0",

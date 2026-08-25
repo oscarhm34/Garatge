@@ -56,11 +56,16 @@ npx supabase link --project-ref <la-teva-referencia>
 npx supabase db push
 ```
 
-I tot seguit regenera els tipus, que ara mateix estan escrits a mà:
+I tot seguit regenera els tipus a partir de l'esquema:
 
 ```bash
-npx supabase gen types typescript --linked > lib/types/database.ts
+npm run db:types
 ```
+
+Això reescriu `lib/types/database.generated.ts`, que **no s'edita mai a mà**.
+`lib/types/database.ts` sí que és manual: hi viuen els àlies curts i la correcció de
+nul·labilitat de les vistes (Postgres no propaga el NOT NULL a través d'una vista, així que el
+generador marca totes les seves columnes com a nul·lables).
 
 ### 4. Correu d'entrada
 
