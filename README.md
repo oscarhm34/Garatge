@@ -19,6 +19,11 @@ una adreça web normal, així que la càmera del mòbil ja l'obre sense instal·
 
 ## Posar-lo en marxa
 
+> **Estat actual:** ja hi ha projecte de Supabase creat i amb l'esquema aplicat
+> (`vliyimrvoeblgpzoldiv`, regió `eu-west-1`, Postgres 17.6). Les 11 migracions estan
+> registrades a `supabase_migrations.schema_migrations`. Si només vols arrencar-lo en local,
+> salta al pas 5.
+
 ### 1. Projecte de Supabase
 
 Crea un projecte a [supabase.com](https://supabase.com) (el pla gratuït va sobrat) i apunta't
@@ -70,6 +75,23 @@ npm install
 npm run dev
 ```
 
+## Publicar-ho a Vercel
+
+1. A [vercel.com/new](https://vercel.com/new), importa el repositori. Next.js es detecta sol i
+   no cal tocar cap ordre de compilació.
+2. Copia-hi les variables d'entorn de `.env.local`, **canviant `NEXT_PUBLIC_SITE_URL` pel domini
+   definitiu**. Aquest és el pas que no es pot desfer després: aquesta adreça queda impresa dins
+   de cada QR.
+3. A Supabase, **Authentication → URL Configuration**, afegeix el domini a *Site URL* i a
+   *Redirect URLs*; si no, l'enllaç del correu retorna a `localhost`.
+4. `vercel.json` ja porta un cron diari cap a `/api/salut`. **Cal que hi sigui:** el pla gratuït
+   de Supabase pausa els projectes després d'una setmana sense activitat, i un inventari de
+   garatge pot passar mesos sense que ningú l'obri. La ruta fa una consulta de veritat contra
+   Postgres; una resposta estàtica no comptaria com a activitat.
+
+> El pla Hobby de Vercel és per a ús **no comercial**. Per a l'inventari de casa hi encaixa; per
+> a una empresa, no.
+
 ## El primer dia
 
 1. Entra amb el teu correu i tria **Crear la casa**. Es creen els 3 armaris i les 9 portes.
@@ -84,6 +106,7 @@ npm run dev
 
 ```bash
 npm run dev          # servidor de desenvolupament
+node --env-file=.env.local scripts/prova-e2e.mjs   # 36 comprovacions contra la BD real
 npm run build        # compilació de producció
 npm run lint         # ESLint
 npx tsc --noEmit     # comprovació de tipus
