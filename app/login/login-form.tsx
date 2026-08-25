@@ -12,6 +12,15 @@ import { createClient } from '@/lib/supabase/client'
 
 type Step = 'email' | 'codi'
 
+/**
+ * La llargada del codi la decideix Supabase (Authentication → Emails), i de
+ * sèrie no són sis xifres sinó vuit. Aquí s'accepta un interval en comptes
+ * d'un número fix: si algú canvia aquell ajust al panell, l'entrada a l'app
+ * no es trenca en silenci.
+ */
+const LONGITUD_MINIMA = 6
+const LONGITUD_MAXIMA = 10
+
 export function LoginForm({ next }: { next: string }) {
   const router = useRouter()
   const [step, setStep] = useState<Step>('email')
@@ -65,7 +74,7 @@ export function LoginForm({ next }: { next: string }) {
           <CardHeader>
             <CardTitle>Entra amb el teu correu</CardTitle>
             <CardDescription>
-              T&apos;enviem un codi de sis xifres. No cal recordar cap contrasenya.
+              T&apos;enviem un codi al correu. No cal recordar cap contrasenya.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -95,7 +104,7 @@ export function LoginForm({ next }: { next: string }) {
         <>
           <CardHeader>
             <CardTitle>Escriu el codi</CardTitle>
-            <CardDescription>Hem enviat sis xifres a {email}.</CardDescription>
+            <CardDescription>Hem enviat un codi a {email}.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={verificarCodi} className="flex flex-col gap-4">
@@ -107,14 +116,14 @@ export function LoginForm({ next }: { next: string }) {
                   autoComplete="one-time-code"
                   autoFocus
                   required
-                  maxLength={6}
+                  maxLength={LONGITUD_MAXIMA}
                   placeholder="000000"
                   className="text-center font-mono text-2xl tracking-[0.4em]"
                   value={codi}
                   onChange={(e) => setCodi(e.target.value.replace(/\D/g, ''))}
                 />
               </div>
-              <Button type="submit" disabled={pending || codi.length < 6}>
+              <Button type="submit" disabled={pending || codi.length < LONGITUD_MINIMA}>
                 {pending ? <Loader2 className="animate-spin" /> : null}
                 Entra
               </Button>
