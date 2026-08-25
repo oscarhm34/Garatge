@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Package } from 'lucide-react'
 import { AccionsObjecte } from '@/components/garatge/accions-objecte'
+import { Placa, PlacaSenseLloc } from '@/components/garatge/placa'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { getItemActivity } from '@/lib/db/activity'
@@ -44,17 +45,6 @@ export default async function ObjectePage({ params }: PageProps<'/objectes/[id]'
             <p className="text-muted-foreground text-sm">{item.quantity} unitats</p>
           ) : null}
 
-          {item.location_id ? (
-            <Link
-              href={`/l/${item.location_code}`}
-              className="text-primary mt-1 block text-sm hover:underline"
-            >
-              {item.location_path}
-            </Link>
-          ) : (
-            <p className="text-muted-foreground mt-1 text-sm">Sense lloc assignat</p>
-          )}
-
           <div className="mt-2 flex flex-wrap gap-1.5">
             {item.category_name ? (
               <Badge
@@ -72,6 +62,14 @@ export default async function ObjectePage({ params }: PageProps<'/objectes/[id]'
           </div>
         </div>
       </div>
+
+      {item.location_code ? (
+        <Link href={`/l/${item.location_code}`} className="block active:scale-[0.99]">
+          <Placa codi={item.location_code} cami={item.location_path} mida="gran" />
+        </Link>
+      ) : (
+        <PlacaSenseLloc />
+      )}
 
       {item.description ? <p className="text-sm">{item.description}</p> : null}
       {item.notes ? (

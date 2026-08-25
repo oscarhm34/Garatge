@@ -76,7 +76,9 @@ export async function getBreadcrumb(locationId: string): Promise<LocationDetail[
 export function defaultChildKind(kind: LocationKind): LocationKind {
   switch (kind) {
     case 'armari':
-      return 'porta'
+      // Un compartiment, no una porta: el que es pot etiquetar es cada espai
+      // tancat, i dues portes batents en comparteixen un.
+      return 'modul'
     case 'porta':
     case 'modul':
       return 'prestatge'
@@ -87,11 +89,26 @@ export function defaultChildKind(kind: LocationKind): LocationKind {
   }
 }
 
-export const KIND_LABEL: Record<LocationKind, string> = {
-  armari: 'Armari',
-  porta: 'Porta',
-  modul: 'Mòdul',
-  prestatge: 'Prestatge',
-  caixa: 'Caixa',
-  altre: 'Ubicació',
+/**
+ * Vocabulari de cada tipus d'ubicacio.
+ *
+ * Cal el genere i el plural escrits a ma: en catala el plural no s'obte
+ * afegint una essa (caixa -> caixes, porta -> portes) i l'article depen del
+ * genere. Fer-ho a ull produeix "Afegir un caixa" i "Caixas", que es el que
+ * fa que una app sembli mig acabada.
+ */
+interface Vocabulari {
+  singular: string
+  plural: string
+  /** Article indeterminat, per a "Afegir ___". */
+  article: string
+}
+
+export const KIND_VOCAB: Record<LocationKind, Vocabulari> = {
+  armari: { singular: 'Armari', plural: 'Armaris', article: 'un' },
+  porta: { singular: 'Porta', plural: 'Portes', article: 'una' },
+  modul: { singular: 'Espai', plural: 'Espais', article: 'un' },
+  prestatge: { singular: 'Prestatge', plural: 'Prestatges', article: 'un' },
+  caixa: { singular: 'Caixa', plural: 'Caixes', article: 'una' },
+  altre: { singular: 'Ubicació', plural: 'Ubicacions', article: 'una' },
 }

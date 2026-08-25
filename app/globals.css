@@ -156,6 +156,17 @@
   outline-offset: -1px;
 }
 
+.etiqueta-banda {
+  flex: 0 0 auto;
+  align-self: stretch;
+  width: 2.5mm;
+  /* print-color-adjust obliga la impressora a imprimir el fons: per defecte,
+     els navegadors se salten els colors de fons per estalviar tinta, i la
+     banda sortiria en blanc, que es justament el que la fa servir. */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
 .etiqueta-qr {
   flex: 0 0 auto;
   width: 26mm;
@@ -177,7 +188,7 @@
 }
 
 .etiqueta-codi {
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
   font-size: 8pt;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -226,4 +237,144 @@
   .full-d-etiquetes {
     justify-content: start;
   }
+}
+
+/* ===========================================================================
+   Sistema visual: "placa de taller"
+   ===========================================================================
+   L'app es fa servir dreta al garatge, amb una ma, sovint amb poca llum i de
+   vegades amb guants. Aixo mana per sobre de qualsevol altra consideracio:
+   contrast alt, zones de toc grosses i la informacio important en gran.
+
+   La resposta que dona l'app sempre es un lloc, i el lloc al mon real es una
+   etiqueta enganxada a un armari. Per aixo la pantalla imita aquella etiqueta:
+   el que busques a la pantalla i el que busques a la paret son la mateixa cosa.
+   =========================================================================== */
+
+:root {
+  /* Paper de taller: gris calid, no blanc pur, que enlluerna menys amb la
+     porta del garatge oberta al migdia. */
+  --background: #f3f1ed;
+  --foreground: #1c1a17;
+  --card: #ffffff;
+  --card-foreground: #1c1a17;
+  --popover: #ffffff;
+  --popover-foreground: #1c1a17;
+
+  /* Groc de seguretat. Es el color amb que el taller diu "mira aixo": cinta de
+     perill, armilles, maquinaria. Sobre fosc es el que mes es llegeix amb poca
+     llum, i deixa lliures els colors d'identitat dels armaris. */
+  --primary: #f2c400;
+  --primary-foreground: #1c1a17;
+
+  --secondary: #e5e0d7;
+  --secondary-foreground: #1c1a17;
+  --muted: #e9e5dd;
+  --muted-foreground: #625d55;
+  --accent: #e5e0d7;
+  --accent-foreground: #1c1a17;
+  --destructive: #c4342b;
+  --border: #d9d4ca;
+  --input: #cbc5ba;
+  --ring: #1c1a17;
+
+  /* Cantonades poc arrodonides: les coses del taller son caixes, no bombolles. */
+  --radius: 0.375rem;
+
+  /* Zona de toc minima. 56 px es el que demana un dit amb guant de treball;
+     els 44 px habituals es queden curts. */
+  --toc: 3.5rem;
+}
+
+.dark {
+  /* Carbo, no negre pur: el negre absolut sobre OLED amb text clar vibra i
+     cansa, i al garatge de nit es mira la pantalla d'aprop. */
+  --background: #17181a;
+  --foreground: #f2f0ec;
+  --card: #202226;
+  --card-foreground: #f2f0ec;
+  --popover: #202226;
+  --popover-foreground: #f2f0ec;
+
+  --primary: #f2c400;
+  --primary-foreground: #1c1a17;
+
+  --secondary: #292c31;
+  --secondary-foreground: #f2f0ec;
+  --muted: #24262a;
+  --muted-foreground: #a3a29d;
+  --accent: #292c31;
+  --accent-foreground: #f2f0ec;
+  --destructive: #e05a50;
+  --border: #31343a;
+  --input: #3a3d43;
+  --ring: #f2c400;
+}
+
+/* Mode fosc automatic.
+   shadcn commuta amb la classe .dark, pero aquesta app no te cap selector de
+   tema ni li'n cal: al garatge, de nit, el que vols es que la pantalla no
+   t'enlluerni, i aixo ja ho sap el sistema operatiu. Sense aquesta consulta de
+   mitjans la paleta fosca no s'activaria mai.
+   El :not(.light) deixa la porta oberta a un interruptor mes endavant sense
+   haver de tornar a tocar els colors. */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+  /* Carbo, no negre pur: el negre absolut sobre OLED amb text clar vibra i
+     cansa, i al garatge de nit es mira la pantalla d'aprop. */
+  --background: #17181a;
+  --foreground: #f2f0ec;
+  --card: #202226;
+  --card-foreground: #f2f0ec;
+  --popover: #202226;
+  --popover-foreground: #f2f0ec;
+
+  --primary: #f2c400;
+  --primary-foreground: #1c1a17;
+
+  --secondary: #292c31;
+  --secondary-foreground: #f2f0ec;
+  --muted: #24262a;
+  --muted-foreground: #a3a29d;
+  --accent: #292c31;
+  --accent-foreground: #f2f0ec;
+  --destructive: #e05a50;
+  --border: #31343a;
+  --input: #3a3d43;
+  --ring: #f2c400;
+}
+}
+
+/* Identitat de cada armari.
+   Els colors surten del codi de colors de les resistencies, que es la manera
+   que ja te el taller de convertir numeros en colors: marro 1, vermell 2,
+   taronja 3. Es salta el groc, que queda reservat per a les accions.
+   Serveix de debo: cada armari te el seu color a la pantalla i a l'adhesiu,
+   aixi s'apren "el vermell" sense haver de llegir res. */
+@theme inline {
+  --color-armari-1: #96603a;
+  --color-armari-2: #c4342b;
+  --color-armari-3: #e0761f;
+  --color-armari-4: #3e9757;
+  --color-armari-5: #2f6fb5;
+  --color-armari-6: #7c5bc4;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+}
+
+/* Els codis d'ubicacio es llegeixen d'una etiqueta i es comparen caracter a
+   caracter. Han de ser monoespaiats i espaiats: A2-M1-E3 no s'ha de poder
+   confondre amb A2-M1-E8 mirant de reull. */
+.codi {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums slashed-zero;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+/* Evita que iOS faci zoom en enfocar un camp: passa amb qualsevol tipus de
+   lletra per sota de 16 px i treu la pantalla de lloc mentre escrius. */
+input,
+textarea,
+select {
+  font-size: max(1rem, 16px);
 }

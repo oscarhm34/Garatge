@@ -23,7 +23,8 @@ import type { LocationKind, LocationRow } from '@/lib/types/database'
 interface Props {
   parentId: string
   kind: LocationKind
-  kindLabel: string
+  /** Singular, plural i article del tipus; el catala els necessita tots tres. */
+  vocab: { singular: string; plural: string; article: string }
 }
 
 /**
@@ -33,7 +34,7 @@ interface Props {
  * ("Prestatge 3"). Obligar a escriure un nom per cada prestatge faria que ningú
  * acabés de configurar el segon armari.
  */
-export function AfegirUbicacio({ parentId, kind, kindLabel }: Props) {
+export function AfegirUbicacio({ parentId, kind, vocab }: Props) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [nom, setNom] = useState('')
@@ -63,16 +64,16 @@ export function AfegirUbicacio({ parentId, kind, kindLabel }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full border-dashed">
+        <Button variant="outline" size="lg" className="h-14 w-full border-dashed sm:flex-1">
           <Plus />
-          Afegir un {kindLabel.toLowerCase()}
+          Afegir {vocab.article} {vocab.singular.toLowerCase()}
         </Button>
       </DialogTrigger>
 
       <DialogContent>
         <form onSubmit={crear}>
           <DialogHeader>
-            <DialogTitle>Afegir un {kindLabel.toLowerCase()}</DialogTitle>
+            <DialogTitle>Afegir {vocab.article} {vocab.singular.toLowerCase()}</DialogTitle>
             <DialogDescription>
               El codi del QR es genera sol a partir d&apos;on el crees.
             </DialogDescription>
@@ -95,7 +96,7 @@ export function AfegirUbicacio({ parentId, kind, kindLabel }: Props) {
                 Cancel·lar
               </Button>
             </DialogClose>
-            <Button type="submit" disabled={pending}>
+            <Button type="submit" size="lg" disabled={pending}>
               {pending ? <Loader2 className="animate-spin" /> : null}
               Crear
             </Button>

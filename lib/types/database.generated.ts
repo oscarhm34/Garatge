@@ -669,7 +669,7 @@ export type Database = {
         }
       }
       bootstrap_garage: {
-        Args: { p_cabinets?: number; p_doors?: number }
+        Args: { p_cabinets?: number; p_compartments?: number }
         Returns: number
       }
       create_household: { Args: { p_name: string }; Returns: string }

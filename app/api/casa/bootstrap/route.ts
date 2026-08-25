@@ -5,14 +5,20 @@ import { createClient } from '@/lib/supabase/server'
 
 const schema = z.object({
   armaris: z.number().int().min(1).max(20).default(3),
-  portes: z.number().int().min(1).max(20).default(3),
+  /** Compartiments independents de cada armari, no portes: en aquests armaris
+   *  dues portes batents obren un sol espai. */
+  espais: z.number().int().min(1).max(20).default(2),
 })
 
 /**
- * Crea els armaris i les portes de cop.
+ * Crea els armaris i els seus compartiments de cop.
  *
- * No crea prestatges: els tres armaris del garatge no estan distribuïts igual
- * per dins, i inventar-se una estructura només obligaria a esborrar-la després.
+ * Compta espais i no portes: en aquests armaris de tres portes, dues son
+ * batents i obren un unic compartiment. Etiquetar-ne tres faria que dos
+ * adhesius apuntessin al mateix lloc.
+ *
+ * No crea prestatges: els armaris no estan distribuits igual per dins, i
+ * inventar-se una estructura nomes obligaria a esborrar-la despres.
  */
 export async function POST(request: Request) {
   const session = await requireSession()
@@ -24,7 +30,7 @@ export async function POST(request: Request) {
   const supabase = await createClient()
   const { data, error } = await supabase.rpc('bootstrap_garage', {
     p_cabinets: body.data.armaris,
-    p_doors: body.data.portes,
+    p_compartments: body.data.espais,
   })
 
   if (error) {

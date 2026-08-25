@@ -76,7 +76,7 @@ export function Cercador({ children }: { children: ReactNode }) {
     <div className="flex flex-col gap-4">
       <div className="relative">
         <Search
-          className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2"
+          className="text-muted-foreground pointer-events-none absolute top-1/2 left-3.5 size-5 -translate-y-1/2"
           aria-hidden
         />
         <Input
@@ -85,8 +85,8 @@ export function Cercador({ children }: { children: ReactNode }) {
           enterKeyHint="search"
           autoComplete="off"
           aria-label="Cerca un objecte"
-          placeholder="Què busques? Un martell, la cinta aïllant..."
-          className="h-14 pr-12 pl-11 text-base"
+          placeholder="Què busques?"
+          className="h-16 pr-14 pl-12 text-lg"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
@@ -96,7 +96,7 @@ export function Cercador({ children }: { children: ReactNode }) {
             variant="ghost"
             size="icon"
             aria-label="Esborrar la cerca"
-            className="absolute top-1/2 right-2 -translate-y-1/2"
+            className="absolute top-1/2 right-2 size-12 -translate-y-1/2"
             onClick={() => {
               setQuery('')
               inputRef.current?.focus()

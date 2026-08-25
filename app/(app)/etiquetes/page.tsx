@@ -1,5 +1,6 @@
 import { Printer } from 'lucide-react'
 import { BotoImprimir } from '@/components/garatge/boto-imprimir'
+import { colorArmari } from '@/lib/armari'
 import { createClient } from '@/lib/supabase/server'
 import { qrSvgBatch } from '@/lib/qr'
 import type { LocationDetail } from '@/lib/types/database'
@@ -55,6 +56,14 @@ export default async function EtiquetesPage({ searchParams }: PageProps<'/etique
       <div className="full-d-etiquetes">
         {ubicacions.map((location) => (
           <div key={location.id} className="etiqueta">
+            {/* La banda de color es el que fa que l'adhesiu de la paret i la
+                placa de la pantalla siguin el mateix objecte. A un metre de
+                distancia es l'unica cosa que es reconeix. */}
+            <div
+              className="etiqueta-banda"
+              style={{ backgroundColor: colorArmari(location.code) }}
+              aria-hidden
+            />
             <div
               className="etiqueta-qr"
               // El SVG el genera qrcode al servidor a partir del codi de la

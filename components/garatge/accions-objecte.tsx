@@ -93,24 +93,24 @@ export function AccionsObjecte({ itemId, itemName, prestatA, teUnPrestecObert }:
   return (
     <>
       <div className="flex flex-col gap-2">
-        <Button onClick={() => setMoving(true)} disabled={pending} size="lg">
+        <Button onClick={() => setMoving(true)} disabled={pending} size="lg" className="h-16 text-base">
           <MoveRight />
           Moure a un altre lloc
         </Button>
 
         {teUnPrestecObert ? (
-          <Button onClick={tornar} disabled={pending} variant="secondary" size="lg">
+          <Button onClick={tornar} disabled={pending} variant="secondary" size="lg" className="h-16 text-base">
             {pending ? <Loader2 className="animate-spin" /> : <Undo2 />}
             {prestatA ? `Ja l’ha tornat ${prestatA}` : 'Ja està tornat'}
           </Button>
         ) : (
-          <Button onClick={agafar} disabled={pending} variant="secondary" size="lg">
+          <Button onClick={agafar} disabled={pending} variant="secondary" size="lg" className="h-16 text-base">
             {pending ? <Loader2 className="animate-spin" /> : <HandCoins />}
             Me l&apos;enduc jo
           </Button>
         )}
 
-        <Button onClick={esborrar} disabled={pending} variant="ghost" className="text-destructive">
+        <Button onClick={esborrar} disabled={pending} variant="ghost" className="text-destructive h-12">
           <Trash2 />
           Esborrar de l&apos;inventari
         </Button>

@@ -42,3 +42,8 @@ next-env.d.ts
 
 # Credencial personal de Supabase. Mai al repositori.
 .supabase-token
+
+# Captures i sortides de Playwright
+.playwright-mcp/
+*.png
+!public/**/*.png

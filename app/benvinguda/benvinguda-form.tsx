@@ -16,7 +16,7 @@ export function BenvingudaForm() {
   const [nom, setNom] = useState('Casa')
   const [codi, setCodi] = useState('')
   const [armaris, setArmaris] = useState(3)
-  const [portes, setPortes] = useState(3)
+  const [espais, setEspais] = useState(2)
   const [pending, setPending] = useState(false)
 
   async function crear(event: React.FormEvent<HTMLFormElement>) {
@@ -28,7 +28,7 @@ export function BenvingudaForm() {
       // està creada i no cal repetir el primer pas.
       const { creades } = await apiPost<{ creades: number }>('/api/casa/bootstrap', {
         armaris,
-        portes,
+        espais,
       })
       toast.success(`Casa creada amb ${creades} ubicacions`)
       router.refresh()
@@ -93,22 +93,23 @@ export function BenvingudaForm() {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="portes">Portes per armari</Label>
+                  <Label htmlFor="espais">Espais per armari</Label>
                   <Input
-                    id="portes"
+                    id="espais"
                     type="number"
                     inputMode="numeric"
                     min={1}
                     max={20}
-                    value={portes}
-                    onChange={(event) => setPortes(Number(event.target.value))}
+                    value={espais}
+                    onChange={(event) => setEspais(Number(event.target.value))}
                   />
                 </div>
               </div>
 
               <p className="text-muted-foreground text-xs">
-                Els prestatges i les caixes els afegiràs des de dins de cada porta, quan les obris
-                i vegis com estan repartides de veritat.
+                Compta <strong>espais</strong>, no portes: si dues portes batents obren el mateix
+                compartiment, és un sol espai. Els prestatges i les caixes els afegiràs des de dins
+                de cada armari, quan l&apos;obris i vegis com està repartit de veritat.
               </p>
 
               <Button type="submit" disabled={pending}>

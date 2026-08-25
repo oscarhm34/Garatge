@@ -84,6 +84,24 @@ async function esborraUsuari(id) {
   })
 }
 
+/**
+ * Esborra la casa d'un usuari abans de treure'l.
+ *
+ * Cal fer-ho explicitament: profiles.household_id es 'on delete set null', o
+ * sigui que esborrar l'usuari s'endu el perfil pero deixa la casa penjada amb
+ * totes les seves ubicacions. Suposar que queia en cascada va omplir el
+ * projecte de cases fantasma fins que algu se'n va adonar.
+ */
+async function esborraCasaDe(token) {
+  const { data } = await api('/rest/v1/profiles?select=household_id', { token })
+  const household = data?.[0]?.household_id
+  if (!household) return
+  await fetch(`${URL_BASE}/rest/v1/households?id=eq.${household}`, {
+    method: 'DELETE',
+    headers: { apikey: SECRETA, Authorization: `Bearer ${SECRETA}` },
+  })
+}
+
 const marca = Date.now()
 const emailA = `prova-a-${marca}@example.com`
 const emailB = `prova-b-${marca}@example.com`
@@ -110,30 +128,30 @@ try {
   const bootstrap = await api('/rest/v1/rpc/bootstrap_garage', {
     token: usuariA.token,
     method: 'POST',
-    body: { p_cabinets: 3, p_doors: 3 },
+    body: { p_cabinets: 3, p_compartments: 2 },
   })
-  comprova('bootstrap_garage crea 12 ubicacions (3 armaris + 9 portes)', bootstrap.data === 12, bootstrap.data)
+  comprova('bootstrap_garage crea 9 ubicacions (3 armaris + 6 espais)', bootstrap.data === 9, bootstrap.data)
 
   const repetit = await api('/rest/v1/rpc/bootstrap_garage', {
     token: usuariA.token,
     method: 'POST',
-    body: { p_cabinets: 3, p_doors: 3 },
+    body: { p_cabinets: 3, p_compartments: 2 },
   })
   comprova('no es pot muntar el garatge dos cops', !repetit.ok, repetit.data)
 
   console.log('\n[3] Codis correlatius generats per la base de dades')
-  const portes = await api('/rest/v1/locations?select=id,code,name&code=eq.A2-P1', {
+  const espais = await api('/rest/v1/locations?select=id,code,name&code=eq.A2-M1', {
     token: usuariA.token,
   })
-  comprova('existeix la porta A2-P1', portes.ok && portes.data.length === 1, portes.data)
-  const portaId = portes.data?.[0]?.id
+  comprova('existeix l’espai A2-M1', espais.ok && espais.data.length === 1, espais.data)
+  const portaId = espais.data?.[0]?.id
 
   const prestatge = await api('/rest/v1/rpc/add_location', {
     token: usuariA.token,
     method: 'POST',
     body: { p_parent: portaId, p_kind: 'prestatge', p_name: null, p_color: null },
   })
-  comprova('add_location hereta el codi del pare', prestatge.data?.code === 'A2-P1-E1', prestatge.data)
+  comprova('add_location hereta el codi del pare', prestatge.data?.code === 'A2-M1-E1', prestatge.data)
   comprova('i li posa nom sol', prestatge.data?.name === 'Prestatge 1', prestatge.data?.name)
 
   const prestatge3 = await (async () => {
@@ -146,14 +164,14 @@ try {
       body: { p_parent: portaId, p_kind: 'prestatge', p_name: null, p_color: null },
     })
   })()
-  comprova('el tercer prestatge és A2-P1-E3', prestatge3.data?.code === 'A2-P1-E3', prestatge3.data)
+  comprova('el tercer prestatge és A2-M1-E3', prestatge3.data?.code === 'A2-M1-E3', prestatge3.data)
 
   const caixa = await api('/rest/v1/rpc/add_location', {
     token: usuariA.token,
     method: 'POST',
     body: { p_parent: prestatge3.data.id, p_kind: 'caixa', p_name: 'Caixa blava', p_color: '#3b82f6' },
   })
-  comprova('les caixes es numeren amb dos dígits', caixa.data?.code === 'A2-P1-E3-C01', caixa.data)
+  comprova('les caixes es numeren amb dos dígits', caixa.data?.code === 'A2-M1-E3-C01', caixa.data)
 
   console.log('\n[4] Afegir un objecte amb etiquetes')
   const { data: perfilA } = await api('/rest/v1/profiles?select=household_id', { token: usuariA.token })
@@ -213,7 +231,7 @@ try {
   const cami = ambCami.data?.[0]?.location_path
   comprova(
     'el resultat porta el camí complet',
-    cami === 'Armari 2 · Porta 1 · Prestatge 3 · Caixa blava',
+    cami === 'Armari 2 · Espai 1 · Prestatge 3 · Caixa blava',
     cami,
   )
 
@@ -302,9 +320,17 @@ try {
   console.error('\nError no controlat:', error.message)
 } finally {
   console.log('\n[neteja]')
-  if (usuariA) await esborraUsuari(usuariA.id)
-  if (usuariB) await esborraUsuari(usuariB.id)
-  console.log('  usuaris de prova esborrats (les cases cauen en cascada)')
+  // La casa primer i l'usuari despres: si es fa a l'inreves, el token amb que
+  // es localitza la casa ja no val i queda penjada al projecte per sempre.
+  if (usuariA) {
+    await esborraCasaDe(usuariA.token)
+    await esborraUsuari(usuariA.id)
+  }
+  if (usuariB) {
+    await esborraCasaDe(usuariB.token)
+    await esborraUsuari(usuariB.id)
+  }
+  console.log('  usuaris i cases de prova esborrats')
 }
 
 console.log(`\n${passades} passades, ${fallades} fallades`)
