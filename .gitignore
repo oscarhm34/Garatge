@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Credencial personal de Supabase. Mai al repositori.
+.supabase-token
