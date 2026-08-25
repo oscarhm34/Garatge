@@ -73,6 +73,24 @@ A **Authentication → Providers → Email** del panell de Supabase, deixa activ
 L'app entra amb un codi de sis xifres i no amb enllaç màgic, perquè el codi funciona encara que
 el correu s'obri en un navegador diferent del que té l'app: al mòbil passa constantment.
 
+**Cal un servidor de correu propi.** El que porta Supabase de sèrie és per a proves i només
+deixa enviar **2 correus per hora a tot el projecte**: donar d'alta quatre persones de casa un
+vespre ja no hi cap. A **Authentication → Emails → SMTP Settings**:
+
+| Camp | Valor |
+|---|---|
+| Host | `smtp.gmail.com` |
+| Port | `465` |
+| Usuari i remitent | el compte de Gmail de la casa |
+| Contrasenya | una *contrasenya d'aplicació* de Google ([crear-la](https://myaccount.google.com/apppasswords), cal verificació en dos passos) |
+| Sender name | `OrganizApp Garaje` |
+
+Amb SMTP propi, puja el límit a **Rate Limits → Emails sent per hour** (30 va bé). Gmail permet
+uns 500 correus al dia, molt per sobre del que gasta una família.
+
+> La contrasenya d'aplicació dona accés al correu sencer, no només a enviar-ne. Viu només a la
+> configuració de Supabase, mai al repositori, i es revoca des de la mateixa pàgina de Google.
+
 ### 5. Arrencar
 
 ```bash
