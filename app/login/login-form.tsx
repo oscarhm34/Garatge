@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { missatgeAuth } from '@/lib/auth-errors'
 import { createClient } from '@/lib/supabase/client'
 
 type Step = 'email' | 'codi'
@@ -39,7 +40,12 @@ export function LoginForm({ next }: { next: string }) {
     setPending(false)
 
     if (error) {
-      toast.error('No s\u2019ha pogut enviar el codi', { description: error.message })
+      toast.error('No s\u2019ha pogut enviar el codi', { description: missatgeAuth(error.message) })
+      // Es passa igualment a la pantalla del codi. Quan l'enviament falla per
+      // l'espera entre correus, sovint ja n'hi ha un d'anterior a la safata: si
+      // aqui es tanques el pas, la persona es queda mirant un error amb el codi
+      // bo a la ma i sense cap manera de fer-lo servir.
+      setStep('codi')
       return
     }
     setStep('codi')
@@ -58,7 +64,7 @@ export function LoginForm({ next }: { next: string }) {
     setPending(false)
 
     if (error) {
-      toast.error('Codi incorrecte', { description: error.message })
+      toast.error('No s’ha pogut entrar', { description: missatgeAuth(error.message) })
       return
     }
     // refresh() abans de push() perquè el servidor torni a llegir la galeta nova;
@@ -97,6 +103,19 @@ export function LoginForm({ next }: { next: string }) {
                 {pending ? <Loader2 className="animate-spin" /> : <Mail />}
                 Envia&apos;m el codi
               </Button>
+
+              {/* Sortida per a qui ja té un codi a la safata: demanar-ne un de
+                  nou nomes per arribar a la casella on escriure'l xoca amb
+                  l'espera entre enviaments i deixa la persona donant voltes. */}
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                disabled={email.trim().length === 0}
+                onClick={() => setStep('codi')}
+              >
+                Ja tinc un codi
+              </Button>
             </form>
           </CardContent>
         </>
@@ -104,7 +123,7 @@ export function LoginForm({ next }: { next: string }) {
         <>
           <CardHeader>
             <CardTitle>Escriu el codi</CardTitle>
-            <CardDescription>Hem enviat un codi a {email}.</CardDescription>
+            <CardDescription>Escriu el codi que has rebut a {email}.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={verificarCodi} className="flex flex-col gap-4">
