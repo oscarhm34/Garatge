@@ -1,4 +1,4 @@
-# Garatge
+# OrganizApp Garaje
 
 Inventari domèstic. Es busca un objecte i l'app diu en quin armari, porta, prestatge i caixa és.
 La interfície i els noms de fitxers, funcions i rutes van **en català**; el codi, en anglès només

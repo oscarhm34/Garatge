@@ -43,7 +43,7 @@ next-env.d.ts
 # Credencial personal de Supabase. Mai al repositori.
 .supabase-token
 
-# Captures i sortides de Playwright
+# Captures i sortides de Playwright.
+# Nomes l'arrel: un "*.png" global es menjava les icones de l'app.
 .playwright-mcp/
-*.png
-!public/**/*.png
+/*.png

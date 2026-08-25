@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "icones": "node scripts/genera-icones.mjs",
     "db:push": "supabase db push",
-    "db:types": "supabase gen types typescript --linked > lib/types/database.generated.ts"
+    "db:types": "supabase gen types typescript --linked > lib/types/database.generated.ts",
+    "portada": "node scripts/prepara-portada.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.120.0",
@@ -42,6 +43,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.2",
+    "sharp": "^0.35.3",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.11"

@@ -25,10 +25,10 @@ const plexMono = IBM_Plex_Mono({
 })
 
 export const metadata: Metadata = {
-  title: { default: 'Garatge', template: '%s · Garatge' },
+  title: { default: 'OrganizApp Garaje', template: '%s · OrganizApp Garaje' },
   description: 'On és cada cosa del garatge de casa.',
-  applicationName: 'Garatge',
-  appleWebApp: { capable: true, title: 'Garatge', statusBarStyle: 'default' },
+  applicationName: 'OrganizApp Garaje',
+  appleWebApp: { capable: true, title: 'OrganizApp', statusBarStyle: 'default' },
   formatDetection: { telephone: false },
 }
 

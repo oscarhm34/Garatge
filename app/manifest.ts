@@ -6,14 +6,14 @@ import type { MetadataRoute } from 'next'
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Garatge — inventari de casa',
-    short_name: 'Garatge',
+    name: 'OrganizApp Garaje',
+    short_name: 'OrganizApp',
     description: 'Busca qualsevol cosa del garatge i mira en quin armari és.',
     start_url: '/',
     display: 'standalone',
     orientation: 'portrait',
-    background_color: '#ffffff',
-    theme_color: '#0a0a0a',
+    background_color: '#f3f1ed',
+    theme_color: '#17181a',
     lang: 'ca',
     categories: ['productivity', 'utilities'],
     icons: [

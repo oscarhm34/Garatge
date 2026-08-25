@@ -1,4 +1,4 @@
-# Garatge
+# OrganizApp Garaje
 
 Inventari del garatge de casa. Busques «martell» al mòbil i et diu **Armari 2 · Porta 1 ·
 Prestatge 3 · Caixa blava**, amb foto i amb qui se l'ha endut si no hi és.
@@ -117,6 +117,20 @@ npm run lint         # ESLint
 npx tsc --noEmit     # comprovació de tipus
 npx next typegen     # regenera els tipus de rutes després d'afegir una pàgina
 ```
+
+## Imatges
+
+Els originals viuen a `assets/` i **no** es serveixen: les versions per a web es
+generen i es versionen al repositori.
+
+```bash
+npm run icones      # icones de la PWA, apple-icon i favicon
+npm run portada     # il·lustració de la pantalla d'entrada
+```
+
+Torna-les a executar només si canvies els fitxers d'`assets/`. Les icones es desen
+amb paleta de 256 colors: en una il·lustració de zones planes no s'hi nota i el fitxer
+baixa de mig mega a unes desenes de kB.
 
 ## Decisions que val la pena conèixer
 
