@@ -13,7 +13,8 @@
     "icones": "node scripts/genera-icones.mjs",
     "db:push": "supabase db push",
     "db:types": "supabase gen types typescript --linked > lib/types/database.generated.ts",
-    "portada": "node scripts/prepara-portada.mjs"
+    "portada": "node scripts/prepara-portada.mjs",
+    "correu:plantilles": "node scripts/plantilles-correu.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.120.0",

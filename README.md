@@ -91,6 +91,15 @@ uns 500 correus al dia, molt per sobre del que gasta una família.
 > La contrasenya d'aplicació dona accés al correu sencer, no només a enviar-ne. Viu només a la
 > configuració de Supabase, mai al repositori, i es revoca des de la mateixa pàgina de Google.
 
+Amb l'SMTP a punt encara falta un pas que no és evident: **la plantilla de sèrie de Supabase
+envia un enllaç, no el codi**, i en anglès. El correu arriba, però diu «Sign in» mentre l'app
+demana sis xifres. Les plantilles en català, amb el codi com a element principal i l'enllaç com
+a alternativa, s'instal·len amb:
+
+```bash
+npm run correu:plantilles
+```
+
 ### 5. Arrencar
 
 ```bash
